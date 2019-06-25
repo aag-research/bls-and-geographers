@@ -70,18 +70,15 @@ headers = AAG_salary_data_textfile[0].split('\t')
 aag_occupations_db = {}
 for line in AAG_salary_data_textfile[1:]:
        occupation, occupation_code = line.split('\t')[:2]
-       occupation_code_short = occupation_code.replace('-', '').replace('.', '')[:6]
-       if occupation_code:
-              aag_occupations_db[occupation_code] = {
-                     'short code': occupation_code_short,
-                     'Occupation Title': occupation
+       if occupation_code != '':
+              aag_occupations_db[occupation_code] = occupation
                      }
 
 # A3. Create list of multiple series_ids
 series_ids_file = open('list_series_id.txt', 'w')
 for state_code in bls_states_db:
     for occupation_code_long in aag_occupations_db:
-        occupation_code = aag_occupations_db[occupation_code_long]['short code']
+        occupation_code = occupation_code_long.replace('-', '').replace('.', '')[:6]
         series_id = prefix + seasonal_code + area_type_code + state_code + area_code + industry_code + occupation_code + data_type
         series_ids_file.write(series_id + '\n')
 series_ids_file.close()
