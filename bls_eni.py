@@ -18,7 +18,7 @@ import requests
 import json
 
 # Change main directory to our folder
-folder = r'C:\Users\cdony\Google Drive\GitHub\bls-and-geographers'
+folder = r'C:\Users\oawowale\Documents\GitHub\bls-and-geographers'
 os.chdir(folder)
 
 """
@@ -53,9 +53,11 @@ data_type = '01'            # Employment
 # A1. State codes: read the states code dictionary from BLS website
 # The BLS State codes represent each state and its name as used in their databases 
 # see https://download.bls.gov/pub/time.series/sa/sa.state
+
 BLS_dictionary_url = r'https://download.bls.gov/pub/time.series/sa/sa.state'
 BLS_dictionary_textfile = requests.get(BLS_dictionary_url).text
 bls_states_db = {}
+
 for line in BLS_dictionary_textfile.split('\n')[1:]:
   try: state_code, state_name = line.strip().split('\t')
   except: continue
@@ -64,10 +66,12 @@ for line in BLS_dictionary_textfile.split('\n')[1:]:
 # A2. Occupation codes: read occupation codes that relate to Geography occupation
 # The AAG collects salaraies from the BLS website for geography-related occupations
 # We use the AAG list of occupaiton
+
 AAG_salary_data_textfilename = r'Salary Data 2018 updated.txt'
 AAG_salary_data_textfile = open(AAG_salary_data_textfilename).readlines()
 headers = AAG_salary_data_textfile[0].split('\t')
 aag_occupations_db = {}
+
 for line in AAG_salary_data_textfile[1:]:
        occupation, occupation_code = line.split('\t')[:2]
        if occupation_code != '':
@@ -97,7 +101,11 @@ endyear = 2018
 bls_api_key_Coline = '41d57752042240da84a71fd2ba7c748d'
 
 # BLS API query
-data_query = json.dumps({"seriesid": series_ids_chunks[0],
+
+#I wanted to make sure my edits were working so I changed the chunk to 8
+#the out put of text file shows two different states and how the state name changes depending
+#depending on the state_code within the series_id
+data_query = json.dumps({"seriesid": series_ids_chunks[8],
                          "startyear":startyear,
                          "endyear":endyear,
                          "registrationkey": bls_api_key_Coline})
@@ -117,30 +125,20 @@ get_response = json.loads(post_request.text)
 #print(get_response['Results']['series'][1])
 
 series_ids_value_textfile = open('series_id_value.txt', 'w')
-series_ids_value_textfile.write('Series ID\tTotal Employment\n')
-#I decided to make a new textfile with both the values and series_ids
-#This for loop only looks at the range of 3 series_ids
-#You can get it to look at more my setting the range to look at a certain amount of values
-#My plan is to just change the ranges for each query I make so it keeps appending to the textfile
-#So when I start doing the query I am going to change file_series_id_value to append mode 'a'
-#I have already tried it this way and it works
+#created a new column for the state names in format tl_2018_us_state data shapefile
+series_ids_value_textfile.write('Name\tSeries ID\tTotal Employment\n')
+
 for series in get_response['Results']['series']:
     series_id = series['seriesID']
     try: employment = series['data'][0]['value']
     except: employment = 'n/a'
-    series_ids_value_textfile.write(series_id + '\t' + employment + '\n')
+    #for loop for looking at state_codes in bls_states_db
+    for state_code in bls_states_db:
+        #this is the index of the series_id that holds the state_code information
+        if state_code == series_id[4:6]:
+            series_ids_value_textfile.write( bls_states_db[state_code] + '\t' + series_id + '\t' + employment + '\n')
+
 del requests
 del json
 series_ids_value_textfile.close()
 
-#Something to think about later for states that don't have values
-#some states don't have values, so we want to the script keeps running despite that
-#fileAppend_series_id = open('list_series_id.txt', 'a+')
-#so if there is a series value == true set employ_val equal to that value
-# for value in get_response['Results']['series'] [0]:
-#     #employ_val = get_response['Results']['series'][0:]
-#     if value != 'value':
-#         employ_val = get_response['Results']['series'][0:]
-#         print(type(employ_val))
-#then save this value to text file
-    #fileAppend_series_id.write(employ_val)
