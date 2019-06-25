@@ -72,7 +72,6 @@ for line in AAG_salary_data_textfile[1:]:
        occupation, occupation_code = line.split('\t')[:2]
        if occupation_code != '':
               aag_occupations_db[occupation_code] = occupation
-                     }
 
 # A3. Create list of multiple series_ids
 series_ids_file = open('list_series_id.txt', 'w')
