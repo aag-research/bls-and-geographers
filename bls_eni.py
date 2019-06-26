@@ -4,7 +4,7 @@
 # Purpose:                      Extract BLS data
 
 # Problem Statement:
-# For several projects at the AAG, it would be valauble to utilize data
+# For several projects at the AAG, it would be valuable to utilize data
 # made available by the Bureau of Labor Statistics (BLS) on jobs
 # and occupations. This mai framework calls different modules that
 # were developed to extract these data using the BLS API and re-format these
@@ -17,9 +17,9 @@ import os
 import requests
 import json
 
-# Change main directory to our folder
-folder = r'C:\Users\cdony\Google Drive\GitHub\bls-and-geographers'
-#folder = r'C:\Users\oawowale\Documents\GitHub\bls-and-geographers'
+# Coline's and Eni's Directories
+#folder = r'C:\Users\cdony\Google Drive\GitHub\bls-and-geographers'
+folder = r'C:\Users\oawowale\Documents\GitHub\bls-and-geographers'
 os.chdir(folder)
 
 """
@@ -98,14 +98,26 @@ for line in AAG_salary_data_textfile[1:]:
                                               'Geography occupations': {}}
       aag_occupations_db[occ_code_6digit]['Geography occupations'][occ_code_8digit] = occ_name_8digit
 
+#print (aag_occupations_db[occ_code_6digit])
+
+
+series_id_list = []
 # A3. Create list of multiple series_ids
 series_ids_file = open('list_series_id.txt', 'w')
+
 for state_code in bls_states_db:
   for occupation_code in aag_occupations_db:
     series_id = prefix + seasonal_code + area_type_code + state_code + area_code + industry_code + occupation_code + data_type
+    series_id_list.append(series_id)
     series_ids_file.write(series_id + '\n')
 series_ids_file.close()
 
+# for series in series_id_list:
+#   if series[17:23] > series[:-1]:
+#     series_id_list.(series, 0)
+# print(series_id_list)
+
+#print(series_id[17:23])
 # A4. Split the list into chucks of 50 series ids
 series_ids = [series_id.strip() for series_id in open('list_series_id.txt').readlines()]
 series_ids_chunks = [series_ids[i:i+50] for i in range(0, len(series_ids), 50)]
@@ -117,18 +129,18 @@ endyear = 2018
 # C. Make Requests to the BLS API, using multiple series ids
 
 # BLS API keys
-#bls_api_key_Eni = 'de6366639eb64fa79045c9071a080dd5'
-bls_api_key_Coline = '41d57752042240da84a71fd2ba7c748d'
+bls_api_key_Eni = 'de6366639eb64fa79045c9071a080dd5'
+#bls_api_key_Coline = '41d57752042240da84a71fd2ba7c748d'
 
 # BLS API query
 
 #I wanted to make sure my edits were working so I changed the chunk to 8
 #the out put of text file shows two different states and how the state name changes depending
 #depending on the state_code within the series_id
-data_query = json.dumps({"seriesid": series_ids_chunks[8],
+data_query = json.dumps({"seriesid": series_ids_chunks[9],
                          "startyear":startyear,
                          "endyear":endyear,
-                         "registrationkey": bls_api_key_Coline})
+                         "registrationkey": bls_api_key_Eni})
 #print(data_query)
 
 # BLS API location
@@ -145,7 +157,7 @@ get_response = json.loads(post_request.text)
 
 series_ids_value_textfile = open('series_id_value.txt', 'w')
 #created a new column for the state names in format tl_2018_us_state data shapefile
-series_ids_value_textfile.write('Series ID\tState\tOccupation\tTotal Employment\n')
+series_ids_value_textfile.write('State')
 
 for series in get_response['Results']['series']:
   series_id = series['seriesID']
@@ -157,9 +169,13 @@ for series in get_response['Results']['series']:
   try: employment = series['data'][0]['value']
   except: employment = 'n/a'
   occupation_name = occupation_name_6digit + ' (includes:' + ','.join(list(aag_occupations.values())) + ')'
-  series_ids_value_textfile.write('\t'.join([series_id,state_name,occupation_name,employment]))
-  series_ids_value_textfile.write('\n')
+  series_ids_value_textfile.write('\t'+ occupation_code_6digit)
+  #series_ids_value_textfile.write('\n')
+  series_ids_value_textfile.write('\n' + employment)
 
+#print(occ_code_6digit)
+
+#print(aag_occupations_db.keys())
 del requests
 del json
 series_ids_value_textfile.close()
