@@ -18,7 +18,8 @@ import requests
 import json
 
 # Change main directory to our folder
-folder = r'C:\Users\oawowale\Documents\GitHub\bls-and-geographers'
+folder = r'C:\Users\cdony\Google Drive\GitHub\bls-and-geographers'
+#folder = r'C:\Users\oawowale\Documents\GitHub\bls-and-geographers'
 os.chdir(folder)
 
 """
@@ -67,23 +68,42 @@ for line in BLS_dictionary_textfile.split('\n')[1:]:
 # The AAG collects salaraies from the BLS website for geography-related occupations
 # We use the AAG list of occupaiton
 
+BLS_dictionary_url = r'https://download.bls.gov/pub/time.series/oe/oe.occupation'
+BLS_dictionary_textfile = requests.get(BLS_dictionary_url).text
+bls_occupations_db = {}
+
+for line in BLS_dictionary_textfile.split('\n')[1:]:
+  try: occupation_code_6digit, occupation_name = line.strip().split('\t')[:2]
+  except: continue
+  bls_occupations_db[occupation_code_6digit] = occupation_name
+
 AAG_salary_data_textfilename = r'Salary Data 2018 updated.txt'
 AAG_salary_data_textfile = open(AAG_salary_data_textfilename).readlines()
 headers = AAG_salary_data_textfile[0].split('\t')
 aag_occupations_db = {}
 
 for line in AAG_salary_data_textfile[1:]:
-       occupation, occupation_code = line.split('\t')[:2]
-       if occupation_code != '':
-              aag_occupations_db[occupation_code] = occupation
+  # The occupations in the salary data file are based on the BLS 8-digit codes
+  occ_name_8digit, occ_code_8digit = line.split('\t')[:2]
+  if occ_code_8digit != '':
+    # To make queries to the BLS API, we need the 6-digit code instead
+    occ_code_6digit = occ_code_8digit.replace('-', '').replace('.', '')[:6]
+    try: occ_name_6digit = bls_occupations_db[occ_code_6digit]
+    except:
+      occ_code_6digit = occ_code_6digit[:5] + '0'
+      occ_name_6digit = bls_occupations_db[occ_code_6digit]
+
+    if occ_code_6digit not in aag_occupations_db:
+      aag_occupations_db[occ_code_6digit] = { 'Main occupation name': occ_name_6digit,
+                                              'Geography occupations': {}}
+      aag_occupations_db[occ_code_6digit]['Geography occupations'][occ_code_8digit] = occ_name_8digit
 
 # A3. Create list of multiple series_ids
 series_ids_file = open('list_series_id.txt', 'w')
 for state_code in bls_states_db:
-    for occupation_code_long in aag_occupations_db:
-        occupation_code = occupation_code_long.replace('-', '').replace('.', '')[:6]
-        series_id = prefix + seasonal_code + area_type_code + state_code + area_code + industry_code + occupation_code + data_type
-        series_ids_file.write(series_id + '\n')
+  for occupation_code in aag_occupations_db:
+    series_id = prefix + seasonal_code + area_type_code + state_code + area_code + industry_code + occupation_code + data_type
+    series_ids_file.write(series_id + '\n')
 series_ids_file.close()
 
 # A4. Split the list into chucks of 50 series ids
@@ -122,23 +142,24 @@ post_request = requests.post(bls_api_location, data=data_query, headers=headers)
 
 # Get the API response as text and convert it to a JSON dictionary
 get_response = json.loads(post_request.text)
-#print(get_response['Results']['series'][1])
 
 series_ids_value_textfile = open('series_id_value.txt', 'w')
 #created a new column for the state names in format tl_2018_us_state data shapefile
-series_ids_value_textfile.write('Name\tSeries ID\tTotal Employment\n')
+series_ids_value_textfile.write('Series ID\tState\tOccupation\tTotal Employment\n')
 
 for series in get_response['Results']['series']:
-    series_id = series['seriesID']
-    try: employment = series['data'][0]['value']
-    except: employment = 'n/a'
-    #for loop for looking at state_codes in bls_states_db
-    for state_code in bls_states_db:
-        #this is the index of the series_id that holds the state_code information
-        if state_code == series_id[4:6]:
-            series_ids_value_textfile.write( bls_states_db[state_code] + '\t' + series_id + '\t' + employment + '\n')
+  series_id = series['seriesID']
+  state_code = series_id[4:6]
+  state_name = bls_states_db[state_code]
+  occupation_code_6digit = series_id[17:23]
+  occupation_name_6digit = aag_occupations_db[occupation_code_6digit]['Main occupation name']
+  aag_occupations = aag_occupations_db[occupation_code_6digit]['Geography occupations']
+  try: employment = series['data'][0]['value']
+  except: employment = 'n/a'
+  occupation_name = occupation_name_6digit + ' (includes:' + ','.join(list(aag_occupations.values())) + ')'
+  series_ids_value_textfile.write('\t'.join([series_id,state_name,occupation_name,employment]))
+  series_ids_value_textfile.write('\n')
 
 del requests
 del json
 series_ids_value_textfile.close()
-

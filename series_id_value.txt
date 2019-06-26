@@ -1,51 +1,51 @@
-Series ID	Total Employment
-OEUS010000000000025104101	190
-OEUS010000000000025106101	40
-OEUS010000000000025103101	50
-OEUS010000000000025106201	n/a
-OEUS010000000000025105101	90
-OEUS010000000000025202101	23850
-OEUS010000000000025103201	530
-OEUS010000000000025105301	n/a
-OEUS010000000000025104301	50
-OEUS010000000000019309201	n/a
-OEUS010000000000025106401	40
-OEUS010000000000025119101	80
-OEUS010000000000019309301	40
-OEUS010000000000025112501	350
-OEUS010000000000025202201	10010
-OEUS010000000000025106501	150
-OEUS010000000000019309401	n/a
-OEUS010000000000025203101	16270
-OEUS010000000000025106701	140
-OEUS010000000000025904101	9210
-OEUS010000000000019401101	100
-OEUS010000000000017202101	n/a
-OEUS010000000000053202101	250
-OEUS010000000000053202201	50
-OEUS010000000000017101101	1210
-OEUS010000000000017301101	1140
-OEUS010000000000017102101	130
-OEUS010000000000017302201	1430
-OEUS010000000000017205101	4370
-OEUS010000000000017302501	280
-OEUS010000000000017208101	770
-OEUS010000000000019409101	300
-OEUS010000000000019409301	200
-OEUS010000000000019404101	40
-OEUS010000000000017101201	70
-OEUS010000000000017212101	40
-OEUS010000000000017215101	180
-OEUS010000000000017303101	830
-OEUS010000000000017102201	610
-OEUS010000000000027304201	700
-OEUS010000000000053604101	n/a
-OEUS010000000000019305101	360
-OEUS010000000000027304301	190
-OEUS010000000000019309101	60
-OEUS010000000000013116101	3780
-OEUS010000000000019304101	n/a
-OEUS010000000000019302201	n/a
-OEUS010000000000039701101	n/a
-OEUS010000000000041304101	410
-OEUS010000000000039701201	n/a
+Series ID	State	Occupation	Total Employment
+OEUS060000000000019401101	California	Agricultural and Food Science Technicians(includes:Agricultural and Food Science Technicians)	3880
+OEUS060000000000017202101	California	Agricultural Engineers(includes:Agricultural Engineers)	270
+OEUS060000000000053202101	California	Air Traffic Controllers(includes:Air Traffic Controllers)	2240
+OEUS060000000000053202201	California	Airfield Operations Specialists(includes:Airfield Operations Specialists)	1470
+OEUS060000000000017101101	California	Architects, Except Landscape and Naval(includes:"Architects, Except Landscape and Naval")	13570
+OEUS060000000000017301101	California	Architectural and Civil Drafters(includes:Architectural and Civil Drafters)	13480
+OEUS060000000000017102101	California	Cartographers and Photogrammetrists(includes:Cartographers and Photogrammetrists)	1010
+OEUS060000000000017302201	California	Civil Engineering Technicians(includes:Civil Engineering Technicians)	7830
+OEUS060000000000017205101	California	Civil Engineers(includes:Civil Engineers)	45060
+OEUS060000000000017302501	California	Environmental Engineering Technicians(includes:Environmental Engineering Technicians)	3240
+OEUS060000000000017208101	California	Environmental Engineers(includes:Environmental Engineers)	8790
+OEUS060000000000019409101	California	Environmental Science and Protection Technicians, Including Health(includes:"Environmental Science and Protection Technicians, Including Health")	5110
+OEUS060000000000019409301	California	Forest and Conservation Technicians(includes:Forest and Conservation Technicians)	6770
+OEUS060000000000019404101	California	Geological and Petroleum Technicians(includes:Geological and Petroleum Technicians)	1630
+OEUS060000000000017101201	California	Landscape Architects(includes:Landscape Architects)	2370
+OEUS060000000000017212101	California	Marine Engineers and Naval Architects(includes:Marine Engineers and Naval Architects)	270
+OEUS060000000000017215101	California	Mining and Geological Engineers, Including Mining Safety Engineers(includes:"Mining and Geological Engineers, Including Mining Safety Engineers")	500
+OEUS060000000000017303101	California	Surveying and Mapping Technicians(includes:Surveying and Mapping Technicians)	4240
+OEUS060000000000017102201	California	Surveyors(includes:Surveyors)	4260
+OEUS060000000000027304201	California	Technical Writers(includes:Technical Writers)	6240
+OEUS060000000000053604101	California	Traffic Technicians(includes:Traffic Technicians)	800
+OEUS060000000000019305101	California	Urban and Regional Planners(includes:Urban and Regional Planners)	7950
+OEUS060000000000027304301	California	Writers and Authors(includes:Writers and Authors)	7910
+OEUS060000000000019309101	California	Anthropologists and Archeologists(includes:Anthropologists and Archaeologists)	1420
+OEUS060000000000013116101	California	Market Research Analysts and Marketing Specialists(includes:Market Research Analysts and Marketing Specialists)	98590
+OEUS060000000000019304101	California	Sociologists(includes:Sociologists)	1070
+OEUS060000000000019302201	California	Survey Researchers(includes:Survey Researchers)	780
+OEUS060000000000039701001	California	Tour and Travel Guides(includes:Tour Guides and Escorts )	6070
+OEUS060000000000041304101	California	Travel Agents(includes:Travel Agents)	8270
+OEUS060000000000019202101	California	Atmospheric and Space Scientists(includes:Atmospheric and Space Scientists)	640
+OEUS060000000000019103101	California	Conservation Scientists(includes:Conservation Scientists)	1990
+OEUS060000000000019204101	California	Environmental Scientists and Specialists, Including Health(includes:"Environmental Scientists and Specialists, Including Health")	12750
+OEUS060000000000045401101	California	Forest and Conservation Workers(includes:Forest and Conservation Workers)	2140
+OEUS060000000000019103201	California	Foresters(includes:Foresters)	430
+OEUS060000000000019204201	California	Geoscientists, Except Hydrologists and Geographers(includes:"Geoscientists, Except Hydrologists and Geographers")	4100
+OEUS060000000000019204301	California	Hydrologists(includes:Hydrologists)	730
+OEUS060000000000011307101	California	Transportation, Storage, and Distribution Managers(includes:"Transportation, Storage, and Distribution Managers")	18990
+OEUS060000000000011912101	California	Natural Sciences Managers(includes:Natural Sciences Managers)	7870
+OEUS060000000000011914101	California	Property, Real Estate, and Community Association Managers(includes:"Property, Real Estate, and Community Association Managers")	35270
+OEUS060000000000011916101	California	Emergency Management Directors(includes:Emergency Management Directors)	840
+OEUS060000000000013202101	California	Appraisers and Assessors of Real Estate(includes:Appraisers and Assessors of Real Estate)	4870
+OEUS060000000000017217101	California	Petroleum Engineers(includes:Petroleum Engineers)	2290
+OEUS060000000000019101301	California	Soil and Plant Scientists(includes:Soil and Plant Scientists)	2270
+OEUS060000000000019102301	California	Zoologists and Wildlife Biologists(includes:Zoologists and Wildlife Biologists)	2240
+OEUS060000000000019301101	California	Economists(includes:Economists)	1430
+OEUS060000000000025106301	California	Economics Teachers, Postsecondary(includes:"Economics Teachers, Postsecondary")	700
+OEUS060000000000025401201	California	Curators(includes:Curators)	1140
+OEUS060000000000033202201	California	Forest Fire Inspectors and Prevention Specialists(includes:Forest Fire Inspectors and Prevention Specialists)	340
+OEUS060000000000033303101	California	Fish and Game Wardens(includes:Fish and Game Wardens)	350
+OEUS060000000000041902101	California	Real Estate Brokers(includes:Real Estate Brokers)	5700
