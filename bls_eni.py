@@ -1,6 +1,6 @@
 # Author:                       Eni Awowale & Coline Dony
 # Date first written:           December 18, 2018
-# Date last updated:            June 13, 2019
+# Date last updated:            June 26, 2019
 # Purpose:                      Extract BLS data
 
 # Problem Statement:
@@ -18,8 +18,8 @@ import requests
 import json
 
 # Coline's and Eni's Directories
-#folder = r'C:\Users\cdony\Google Drive\GitHub\bls-and-geographers'
-folder = r'C:\Users\oawowale\Documents\GitHub\bls-and-geographers'
+folder = r'C:\Users\cdony\Google Drive\GitHub\bls-and-geographers'
+#folder = r'C:\Users\oawowale\Documents\GitHub\bls-and-geographers'
 os.chdir(folder)
 
 """
@@ -105,8 +105,9 @@ series_id_list = []
 # A3. Create list of multiple series_ids
 series_ids_file = open('list_series_id.txt', 'w')
 
+aag_occupations = list(aag_occupations_db.keys())
 for state_code in bls_states_db:
-  for occupation_code in aag_occupations_db:
+  for occupation_code in aag_occupations:
     series_id = prefix + seasonal_code + area_type_code + state_code + area_code + industry_code + occupation_code + data_type
     series_id_list.append(series_id)
     series_ids_file.write(series_id + '\n')
@@ -157,8 +158,8 @@ get_response = json.loads(post_request.text)
 
 series_ids_value_textfile = open('series_id_value.txt', 'w')
 #created a new column for the state names in format tl_2018_us_state data shapefile
-series_ids_value_textfile.write('State')
-
+series_ids_value_textfile.write('State\t')
+series_ids_value_textfile.write('\t'.join(aag_occupations) + '\n')
 for series in get_response['Results']['series']:
   series_id = series['seriesID']
   state_code = series_id[4:6]
@@ -169,9 +170,7 @@ for series in get_response['Results']['series']:
   try: employment = series['data'][0]['value']
   except: employment = 'n/a'
   occupation_name = occupation_name_6digit + ' (includes:' + ','.join(list(aag_occupations.values())) + ')'
-  series_ids_value_textfile.write('\t'+ occupation_code_6digit)
-  #series_ids_value_textfile.write('\n')
-  series_ids_value_textfile.write('\n' + employment)
+  series_ids_value_textfile.write('\t' + employment)
 
 #print(occ_code_6digit)
 
