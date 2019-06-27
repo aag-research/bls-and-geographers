@@ -18,8 +18,8 @@ import requests
 import json
 
 # Coline's and Eni's Directories
-folder = r'C:\Users\cdony\Google Drive\GitHub\bls-and-geographers'
-#folder = r'C:\Users\oawowale\Documents\GitHub\bls-and-geographers'
+#folder = r'C:\Users\cdony\Google Drive\GitHub\bls-and-geographers'
+folder = r'C:\Users\oawowale\Documents\GitHub\bls-and-geographers'
 os.chdir(folder)
 
 """
@@ -106,6 +106,7 @@ series_id_list = []
 series_ids_file = open('list_series_id.txt', 'w')
 
 aag_occupations = list(aag_occupations_db.keys())
+#print(len(aag_occupations))
 for state_code in bls_states_db:
   for occupation_code in aag_occupations:
     series_id = prefix + seasonal_code + area_type_code + state_code + area_code + industry_code + occupation_code + data_type
@@ -138,7 +139,7 @@ bls_api_key_Eni = 'de6366639eb64fa79045c9071a080dd5'
 #I wanted to make sure my edits were working so I changed the chunk to 8
 #the out put of text file shows two different states and how the state name changes depending
 #depending on the state_code within the series_id
-data_query = json.dumps({"seriesid": series_ids_chunks[9],
+data_query = json.dumps({"seriesid": series_ids_chunks[1],
                          "startyear":startyear,
                          "endyear":endyear,
                          "registrationkey": bls_api_key_Eni})
@@ -158,23 +159,36 @@ get_response = json.loads(post_request.text)
 
 series_ids_value_textfile = open('series_id_value.txt', 'w')
 #created a new column for the state names in format tl_2018_us_state data shapefile
+#print(get_response['Results']['series'][0:])
+#print (get_response['Results']['series'][0:]['data'][0]['value'])
+list_state_name = list(bls_states_db.values())
+#print(list_state_name)
+series_ids_value_textfile = open('series_id_value.txt', 'w')
+
 series_ids_value_textfile.write('State\t')
 series_ids_value_textfile.write('\t'.join(aag_occupations) + '\n')
+#series_ids_value_textfile.write('\n'.join(list_state_name))
+
 for series in get_response['Results']['series']:
   series_id = series['seriesID']
   state_code = series_id[4:6]
+  #print(series['data'][0:])
   state_name = bls_states_db[state_code]
   occupation_code_6digit = series_id[17:23]
   occupation_name_6digit = aag_occupations_db[occupation_code_6digit]['Main occupation name']
   aag_occupations = aag_occupations_db[occupation_code_6digit]['Geography occupations']
   try: employment = series['data'][0]['value']
-  except: employment = 'n/a'
+  except: employment = 'none'
+  if employment == '-':
+    employment = 'no est.'
   occupation_name = occupation_name_6digit + ' (includes:' + ','.join(list(aag_occupations.values())) + ')'
+if state_name == state_name:
+  series_ids_value_textfile.write(state_name)
   series_ids_value_textfile.write('\t' + employment)
 
-#print(occ_code_6digit)
 
-#print(aag_occupations_db.keys())
+#print(aag_occupations_db)
+
 del requests
 del json
 series_ids_value_textfile.close()
