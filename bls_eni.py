@@ -1,6 +1,6 @@
 # Author:                       Eni Awowale & Coline Dony
 # Date first written:           December 18, 2018
-# Date last updated:            June 26, 2019
+# Date last updated:            June 27, 2019
 # Purpose:                      Extract BLS data
 
 # Problem Statement:
@@ -18,8 +18,8 @@ import requests
 import json
 
 # Coline's and Eni's Directories
-#folder = r'C:\Users\cdony\Google Drive\GitHub\bls-and-geographers'
-folder = r'C:\Users\oawowale\Documents\GitHub\bls-and-geographers'
+folder = r'C:\Users\cdony\Google Drive\GitHub\bls-and-geographers'
+#folder = r'C:\Users\oawowale\Documents\GitHub\bls-and-geographers'
 os.chdir(folder)
 
 """
@@ -95,8 +95,8 @@ for line in AAG_salary_data_textfile[1:]:
 
     if occ_code_6digit not in aag_occupations_db:
       aag_occupations_db[occ_code_6digit] = { 'Main occupation name': occ_name_6digit,
-                                              'Geography occupations': {}}
-      aag_occupations_db[occ_code_6digit]['Geography occupations'][occ_code_8digit] = occ_name_8digit
+                                              'Geography occupations': {occ_code_8digit : occ_name_8digit}}
+    else: aag_occupations_db[occ_code_6digit]['Geography occupations'][occ_code_8digit] = occ_name_8digit
 
 #print (aag_occupations_db[occ_code_6digit])
 
@@ -158,35 +158,27 @@ post_request = requests.post(bls_api_location, data=data_query, headers=headers)
 get_response = json.loads(post_request.text)
 
 series_ids_value_textfile = open('series_id_value.txt', 'w')
-#created a new column for the state names in format tl_2018_us_state data shapefile
-#print(get_response['Results']['series'][0:])
-#print (get_response['Results']['series'][0:]['data'][0]['value'])
-list_state_name = list(bls_states_db.values())
-#print(list_state_name)
-series_ids_value_textfile = open('series_id_value.txt', 'w')
+series_ids_value_textfile.write('State\t' + '\t'.join(aag_occupations))
 
-series_ids_value_textfile.write('State\t')
-series_ids_value_textfile.write('\t'.join(aag_occupations) + '\n')
-#series_ids_value_textfile.write('\n'.join(list_state_name))
-
+state_values = []
 for series in get_response['Results']['series']:
   series_id = series['seriesID']
   state_code = series_id[4:6]
-  #print(series['data'][0:])
   state_name = bls_states_db[state_code]
   occupation_code_6digit = series_id[17:23]
-  occupation_name_6digit = aag_occupations_db[occupation_code_6digit]['Main occupation name']
-  aag_occupations = aag_occupations_db[occupation_code_6digit]['Geography occupations']
-  try: employment = series['data'][0]['value']
+  occupation_index = aag_occupations.index(occupation_code_6digit)
+  #occupation_name_6digit = aag_occupations_db[occupation_code_6digit]['Main occupation name']
+  #aag_occupations = aag_occupations_db[occupation_code_6digit]['Geography occupations']
+  try: employment = series['data'][0]['value'].replace('-', 'no est.')
   except: employment = 'none'
-  if employment == '-':
-    employment = 'no est.'
-  occupation_name = occupation_name_6digit + ' (includes:' + ','.join(list(aag_occupations.values())) + ')'
-  series_ids_value_textfile.write(state_name + employment)
-
+  #occupation_name = occupation_name_6digit + ' (includes:' + ','.join(list(aag_occupations.values())) + ')'
+  if state_name not in state_values:
+    series_ids_value_textfile.write('\t'.join(state_values) + '\n')
+    state_values = [state_name] + ['*']*len(aag_occupations)
+  state_values[occupation_index + 1] = employment
+series_ids_value_textfile.write('\t'.join(state_values) + '\n')
 
 #print(aag_occupations_db)
-
 del requests
 del json
 series_ids_value_textfile.close()
