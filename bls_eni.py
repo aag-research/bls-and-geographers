@@ -182,9 +182,7 @@ for series in get_response['Results']['series']:
   if employment == '-':
     employment = 'no est.'
   occupation_name = occupation_name_6digit + ' (includes:' + ','.join(list(aag_occupations.values())) + ')'
-if state_name == state_name:
-  series_ids_value_textfile.write(state_name)
-  series_ids_value_textfile.write('\t' + employment)
+  series_ids_value_textfile.write(state_name + employment)
 
 
 #print(aag_occupations_db)
