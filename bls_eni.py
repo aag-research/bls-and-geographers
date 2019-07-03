@@ -138,41 +138,54 @@ bls_api_key_Eni = 'de6366639eb64fa79045c9071a080dd5'
 #bls_api_key_Coline = '41d57752042240da84a71fd2ba7c748d'
 
 # BLS API query
-data_query = json.dumps({"seriesid": series_ids_chunks[0],
+#you stopped herere
+#for chunk in series_ids_chunks[0:]:
+  #print(chunk)
+data_query_list=[]
+
+for i in range(0,100):
+  data_query = json.dumps({"seriesid": series_ids_chunks[i],
                          "startyear":startyear,
                          "endyear":endyear,
                          "registrationkey": bls_api_key_Eni})
-
+  data_query_list.append(data_query)
 # BLS API location
 bls_api_location = 'https://api.bls.gov/publicAPI/v2/timeseries/data/'
 
 # Query Header: requests the response to be in the JSON format
 headers = {'Content-type': 'application/json'}
 
-# Send the query to the BLS API
-post_request = requests.post(bls_api_location, data=data_query, headers=headers)
-
-# Get the API response as text and convert it to a JSON dictionary
-get_response = json.loads(post_request.text)
-
-#Creating new text file in a suitable format for joining attribute tables TIGER Line Shapefiles
 state_occupational_employment_textfile = open('state_occupational_employment.txt', 'w')
 state_occupational_employment_textfile.write('State\t' + '\t'.join(aag_occupations))
+state_values = []
+
+
+# Send the query to the BLS API
+for e in data_query_list:
+  post_request = requests.post(bls_api_location, data=e, headers=headers)
+
+# Get the API response as text and convert it to a JSON dictionary
+  get_response = json.loads(post_request.text)
+
+#Creating new text file in a suitable format for joining attribute tables TIGER Line Shapefiles
+# state_occupational_employment_textfile = open('state_occupational_employment.txt', 'w')
+# state_occupational_employment_textfile.write('State\t' + '\t'.join(aag_occupations))
 
 #Starting Request
-state_values = []
-for series in get_response['Results']['series']:
-  series_id = series['seriesID']
-  state_code = series_id[4:6]
-  state_name = bls_states_db[state_code]
-  occupation_code_6digit = series_id[17:23]
-  occupation_index = aag_occupations.index(occupation_code_6digit)
-  try: employment = series['data'][0]['value'].replace('-', 'no est.')
-  except: employment = 'none'
-  if state_name not in state_values:
-    state_occupational_employment_textfile.write('\t'.join(state_values) + '\n')
-    state_values = [state_name] + ['*']*len(aag_occupations)
-  state_values[occupation_index + 1] = employment
+# state_values = []
+  for series in get_response['Results']['series']:
+    series_id = series['seriesID']
+    #print(series_id)
+    state_code = series_id[4:6]
+    state_name = bls_states_db[state_code]
+    occupation_code_6digit = series_id[17:23]
+    occupation_index = aag_occupations.index(occupation_code_6digit)
+    try: employment = series['data'][0]['value'].replace('-', 'no est.')
+    except: employment = 'none'
+    if state_name not in state_values:
+      state_occupational_employment_textfile.write('\t'.join(state_values) + '\n')
+      state_values = [state_name] + ['*']*len(aag_occupations)
+    state_values[occupation_index + 1] = employment
 state_occupational_employment_textfile.write('\t'.join(state_values) + '\n')
 
 del requests
