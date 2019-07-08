@@ -1,6 +1,6 @@
 # Author:                       Eni Awowale & Coline Dony
 # Date first written:           December 18, 2018
-# Date last updated:            June 27, 2019
+# Date last updated:            July 08, 2019
 # Purpose:                      Extract BLS data
 
 # Problem Statement:
@@ -134,8 +134,10 @@ endyear = 2018
 # C. Make Requests to the BLS API, using multiple series ids
 
 # BLS API keys:
-bls_api_key_Eni = 'de6366639eb64fa79045c9071a080dd5'
-#bls_api_key_Coline = '41d57752042240da84a71fd2ba7c748d'
+#bls_api_key_Eni = 'de6366639eb64fa79045c9071a080dd5'
+bls_api_key_Coline = '41d57752042240da84a71fd2ba7c748d'
+#bls_api_key = '41d57752042240da84a71fd2ba7c748d'
+
 
 #Creating new text file in a suitable format for joining attribute tables TIGER Line Shapefiles
 state_occupational_employment_textfile = open('state_occupational_employment.txt', 'w')
@@ -143,10 +145,10 @@ state_occupational_employment_textfile.write('State\t' + '\t'.join(aag_occupatio
 state_values = []
 
 for series_ids_chunk in series_ids_chunks:
-  data_query = json.dumps({"seriesid": series_ids_chunk,
+  data_query = json.dumps({"seriesid": series_ids_chunks,
                          "startyear": startyear,
                          "endyear": endyear,
-                         "registrationkey": bls_api_key_Eni})
+                         "registrationkey": bls_api_key_Coline})
   # BLS API location
   bls_api_location = 'https://api.bls.gov/publicAPI/v2/timeseries/data/'
 
@@ -154,7 +156,7 @@ for series_ids_chunk in series_ids_chunks:
   headers = {'Content-type': 'application/json'}
 
   # Send the query to the BLS API
-  post_request = requests.post(bls_api_location, data=e, headers=headers)
+  post_request = requests.post(bls_api_location, data=data_query, headers=headers)
 
   # Get the API response as text and convert it to a JSON dictionary
   get_response = json.loads(post_request.text)
