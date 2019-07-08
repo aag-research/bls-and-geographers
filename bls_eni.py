@@ -145,7 +145,7 @@ state_occupational_employment_textfile.write('State\t' + '\t'.join(aag_occupatio
 state_values = []
 
 for series_ids_chunk in series_ids_chunks:
-  data_query = json.dumps({"seriesid": series_ids_chunks,
+  data_query = json.dumps({"seriesid": series_ids_chunk,
                          "startyear": startyear,
                          "endyear": endyear,
                          "registrationkey": bls_api_key_Coline})
