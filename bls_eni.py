@@ -16,6 +16,7 @@
 import os
 import requests
 import json
+import operator
 
 # Coline's and Eni's Directories
 #folder = r'C:\Users\cdony\Google Drive\GitHub\bls-and-geographers'
@@ -59,18 +60,18 @@ data_type = '01'            # Employment
 BLS_dictionary_url = r'https://download.bls.gov/pub/time.series/sa/sa.state'
 BLS_dictionary_textfile = requests.get(BLS_dictionary_url).text
 bls_states_db = {}
+bls_states_values_db = {}
 
+#Creating state dictionary
 for line in BLS_dictionary_textfile.split('\n')[1:]:
   #Skip the first line loop and split to list by  each next line
   try: state_code, state_name = line.strip().split('\t')
   #initializing variables state code and state name
   except: continue
   bls_states_db[state_code] = state_name
+
   #adding items to bls_states_db: keys are state codes, values are state names
 
-# A2. Occupation codes: read occupation codes that relate to Geography occupation
-# The AAG collects salaries from the BLS website for geography-related occupations
-# We use the AAG list of occupation
 
 #Same thing as url request above but instead it is for occupations
 BLS_dictionary_url = r'https://download.bls.gov/pub/time.series/oe/oe.occupation'
@@ -115,6 +116,10 @@ series_ids_file = open('list_series_id.txt', 'w')
 #Initializing list AGG of occupations
 aag_occupations = list(aag_occupations_db.keys())
 
+#Adding occupations to state database
+
+
+
 #Initializing variable series_id that follows the BLS series_id format
 for state_code in bls_states_db:
   for occupation_code in aag_occupations:
@@ -134,21 +139,23 @@ endyear = 2018
 # C. Make Requests to the BLS API, using multiple series ids
 
 # BLS API keys:
+bls_api_key_Eni_3 = '8649eca48fd747478b7ba9a7095b2473'
+#bls_api_key_Eni_2 = '9954b4145b514eae81c6fe9a93739299'
 #bls_api_key_Eni = 'de6366639eb64fa79045c9071a080dd5'
-bls_api_key_Coline = '41d57752042240da84a71fd2ba7c748d'
+#bls_api_key_Coline = '41d57752042240da84a71fd2ba7c748d'
 #bls_api_key = '41d57752042240da84a71fd2ba7c748d'
 
 
 #Creating new text file in a suitable format for joining attribute tables TIGER Line Shapefiles
 state_occupational_employment_textfile = open('state_occupational_employment.txt', 'w')
-state_occupational_employment_textfile.write('State\t' + '\t'.join(aag_occupations))
+#state_occupational_employment_textfile.write('State\t' + '\t'.join(aag_occupations))
 state_values = []
-
+state_values_appending = []
 for series_ids_chunk in series_ids_chunks:
   data_query = json.dumps({"seriesid": series_ids_chunk,
                          "startyear": startyear,
                          "endyear": endyear,
-                         "registrationkey": bls_api_key_Coline})
+                         "registrationkey": bls_api_key_Eni_3})
   # BLS API location
   bls_api_location = 'https://api.bls.gov/publicAPI/v2/timeseries/data/'
 
@@ -164,19 +171,38 @@ for series_ids_chunk in series_ids_chunks:
   # Extracting data from the API response
   for series in get_response['Results']['series']:
     series_id = series['seriesID']
-    #print(series_id)
     state_code = series_id[4:6]
     state_name = bls_states_db[state_code]
     occupation_code_6digit = series_id[17:23]
     occupation_index = aag_occupations.index(occupation_code_6digit)
     try: employment = series['data'][0]['value'].replace('-', 'no est.')
     except: employment = 'none'
+    #adding state names to new dictionary with values
+    if state_name not in bls_states_values_db:
+      bls_states_values_db[state_name]={}
+    if employment and occupation_code_6digit not in bls_states_values_db:
+      bls_states_values_db[state_name][occupation_code_6digit]=employment
+
     if state_name not in state_values:
-      state_occupational_employment_textfile.write('\t'.join(state_values) + '\n')
+      #state_occupational_employment_textfile.write('\t'.join(state_values) + '\n')
       state_values = [state_name] + ['*']*len(aag_occupations)
     state_values[occupation_index + 1] = employment
-state_occupational_employment_textfile.write('\t'.join(state_values) + '\n')
+#state_occupational_employment_textfile.write('\t'.join(state_values) + '\n')
 state_occupational_employment_textfile.close()
+
+#state_occupation_values = bls_states_values_db
+#Changing values to integer so they can be compared:
+for value in bls_states_values_db.values():
+    for key, occupation_value in value.items():
+        if occupation_value.isdigit():
+            new_occupation_value = int(occupation_value)
+            value[key] = new_occupation_value
+        else:
+          value[key]=0
+    state_occupation_values = dict(sorted(value.items(), key=operator.itemgetter(1,3), reverse=True)[:5])
+
+
 
 del requests
 del json
+
