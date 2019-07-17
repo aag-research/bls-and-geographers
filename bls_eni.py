@@ -139,8 +139,8 @@ endyear = 2018
 # C. Make Requests to the BLS API, using multiple series ids
 
 # BLS API keys:
-bls_api_key_Eni_3 = '8649eca48fd747478b7ba9a7095b2473'
-#bls_api_key_Eni_2 = '9954b4145b514eae81c6fe9a93739299'
+#bls_api_key_Eni_3 = '8649eca48fd747478b7ba9a7095b2473'
+bls_api_key_Eni_2 = '9954b4145b514eae81c6fe9a93739299'
 #bls_api_key_Eni = 'de6366639eb64fa79045c9071a080dd5'
 #bls_api_key_Coline = '41d57752042240da84a71fd2ba7c748d'
 #bls_api_key = '41d57752042240da84a71fd2ba7c748d'
@@ -155,7 +155,7 @@ for series_ids_chunk in series_ids_chunks:
   data_query = json.dumps({"seriesid": series_ids_chunk,
                          "startyear": startyear,
                          "endyear": endyear,
-                         "registrationkey": bls_api_key_Eni_3})
+                         "registrationkey": bls_api_key_Eni_2})
   # BLS API location
   bls_api_location = 'https://api.bls.gov/publicAPI/v2/timeseries/data/'
 
@@ -189,17 +189,30 @@ for series_ids_chunk in series_ids_chunks:
     state_values[occupation_index + 1] = employment
 #state_occupational_employment_textfile.write('\t'.join(state_values) + '\n')
 state_occupational_employment_textfile.close()
-
+state_occupational_values_list = [[] for occ_value in range(len(bls_states_values_db))]
+state_occupational_values_list2=[]
+state_occupational_value={}
 #state_occupation_values = bls_states_values_db
 #Changing values to integer so they can be compared:
 for value in bls_states_values_db.values():
     for key, occupation_value in value.items():
         if occupation_value.isdigit():
+            occupation_value = int(occupation_value)
             new_occupation_value = int(occupation_value)
-            value[key] = new_occupation_value
+            value[key] = occupation_value
+            state_occupational_values_list2.append(new_occupation_value)
+            for list in range(0,95):
+              state_occupational_values_list[list].append(state_occupational_values_list2[0:-1:95])
         else:
           value[key]=0
-    state_occupation_values = dict(sorted(value.items(), key=operator.itemgetter(1,3), reverse=True)[:5])
+          state_occupational_values_list2.append(0)
+          for list in range(len(state_occupational_values_list)):
+            state_occupational_values_list[list].append(state_occupational_values_list2[list])
+        # state_occupational_values_list = [[] for occ_value in range(len(bls_states_values_db))]
+        # state_occupational_values_list.append(new_occupation_value)
+
+    #for num in range(0,95):
+      #state_occupation_values = dict(sorted(value.items(), key=operator.itemgetter(num), reverse=True)[:5])
 
 
 
