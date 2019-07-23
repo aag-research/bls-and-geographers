@@ -19,8 +19,8 @@ import json
 import operator
 
 # Coline's and Eni's Directories
-folder = r'C:\Users\cdony\Google Drive\GitHub\bls-and-geographers'
-#folder = r'C:\Users\oawowale\Documents\GitHub\bls-and-geographers'
+#folder = r'C:\Users\cdony\Google Drive\GitHub\bls-and-geographers'
+folder = r'C:\Users\oawowale\Documents\GitHub\bls-and-geographers'
 os.chdir(folder)
 
 """
@@ -180,6 +180,9 @@ for series_ids_chunk in series_ids_chunks:
 bls_responses_textfile.write('\t'.join(state_values) + '\n')
 bls_responses_textfile.close()
 '''
+top_five_occupations_textfile = open(r'top_5_state_occupations.txt','w')
+top_five_occupations_textfile.write('State\t' + '1st\t' + '2nd\t' + '3rd\t' + '4th\t' + '5th')
+top_values = []
 
 # Read responses from the text file and calculate
 # the top 5 occupations
@@ -190,7 +193,7 @@ for line in bls_responses_textfile[1:]:
   state_name = state_data[0]
   bls_states_values_db[state_name] = {}
 
-  # Convert text values into intgers
+  # Convert text values into integers
   employment_ints = []
   for occupation_code, employment_text in zip(aag_occupations, state_data[1:]):
     try: employment_int = int(employment_text)
@@ -198,19 +201,33 @@ for line in bls_responses_textfile[1:]:
     employment_ints += [employment_int]
     bls_states_values_db[state_name][occupation_code] = {'employment text': employment_text,
                                                         'employment int': employment_int}
+
   # Calculate top 5 occupations per state
   bls_states_values_db[state_name]['top 5'] = []
   for employment_int, occupation_code in sorted(zip(employment_ints, aag_occupations), reverse=True)[:5]:
     bls_states_values_db[state_name]['top 5'] += [occupation_code]
+    top_val = bls_states_values_db[state_name]['top 5']
+  if state_name and top_val not in top_values:
+    top_values.append((state_name,top_val))
+for state, top_occupations in top_values:
+  #top_state = [top_5 for top_5 in top_occupations]
+  top_five_occupations_textfile.write('\n'+ state + '\t')
+  for top_5 in top_occupations:
+    top_five_occupations_textfile.write(top_5 + '\t')
+    #   for occupations in top_occupations:
+    #     top_five_occupations_textfile.write('\t'+ occupations)
+    #   top_five_occupations_textfile.write( + '\n')
+    # top_five_occupations_textfile.write('\n' + employment)
 
 # Print out the top 5 in each state
 for state_name in bls_states_values_db:
-  print('\n\n')
-  print(state_name)
+  #print('\n\n')
+  #print(state_name)
   for occupation_code in bls_states_values_db[state_name]['top 5']:
     occupation_name = aag_occupations_db[occupation_code]['Main occupation name']
     employment = bls_states_values_db[state_name][occupation_code]['employment text']
-    print(occupation_name, ' : ', employment)
+    #print(occupation_name, ' : ', employment)
+top_five_occupations_textfile.close()
   
 del requests
 del json
