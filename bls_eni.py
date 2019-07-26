@@ -1,6 +1,6 @@
 # Author:                       Eni Awowale & Coline Dony
 # Date first written:           December 18, 2018
-# Date last updated:            July 08, 2019
+# Date last updated:            July 268, 2019
 # Purpose:                      Extract BLS data
 
 # Problem Statement:
@@ -16,11 +16,10 @@
 import os
 import requests
 import json
-import operator
 
 # Coline's and Eni's Directories
-#folder = r'C:\Users\cdony\Google Drive\GitHub\bls-and-geographers'
-folder = r'C:\Users\oawowale\Documents\GitHub\bls-and-geographers'
+folder = r'C:\Users\cdony\Google Drive\GitHub\bls-and-geographers'
+#folder = r'C:\Users\oawowale\Documents\GitHub\bls-and-geographers'
 os.chdir(folder)
 
 """
@@ -134,11 +133,10 @@ endyear = 2018
 # https://www.bls.gov/developers/api_signature_v2.htm#multiple
 
 # BLS API keys:
-#bls_api_key_Eni_3 = '8649eca48fd747478b7ba9a7095b2473'
-#bls_api_key_Eni_2 = '9954b4145b514eae81c6fe9a93739299'
-#bls_api_key_Eni = 'de6366639eb64fa79045c9071a080dd5'
-bls_api_key_Coline = '41d57752042240da84a71fd2ba7c748d'
-#bls_api_key = '41d57752042240da84a71fd2ba7c748d'
+bls_api_key = {'Eni 1': 'de6366639eb64fa79045c9071a080dd5',
+                'Eni 2': '9954b4145b514eae81c6fe9a93739299',
+                'Eni 3': '8649eca48fd747478b7ba9a7095b2473',
+                'Coline': '41d57752042240da84a71fd2ba7c748d'}
 
 # Store bls responses to a text file
 bls_responses_textfilename = r'bls_state_occupational_employment.txt'
@@ -151,7 +149,7 @@ for series_ids_chunk in series_ids_chunks:
   data_query = json.dumps({"seriesid": series_ids_chunk,
                          "startyear": startyear,
                          "endyear": endyear,
-                         "registrationkey": bls_api_key_Coline})
+                         "registrationkey": bls_api_key['Coline']})
   # BLS API location
   bls_api_location = 'https://api.bls.gov/publicAPI/v2/timeseries/data/'
 
@@ -180,9 +178,6 @@ for series_ids_chunk in series_ids_chunks:
 bls_responses_textfile.write('\t'.join(state_values) + '\n')
 bls_responses_textfile.close()
 '''
-top_five_occupations_textfile = open(r'top_5_state_occupations.txt','w')
-top_five_occupations_textfile.write('State\t' + '1st\t' + '2nd\t' + '3rd\t' + '4th\t' + '5th')
-top_values = []
 
 # Read responses from the text file and calculate
 # the top 5 occupations
@@ -200,34 +195,18 @@ for line in bls_responses_textfile[1:]:
     except: employment_int = 0
     employment_ints += [employment_int]
     bls_states_values_db[state_name][occupation_code] = {'employment text': employment_text,
-                                                        'employment int': employment_int}
+                                                         'employment int': employment_int}
 
   # Calculate top 5 occupations per state
   bls_states_values_db[state_name]['top 5'] = []
   for employment_int, occupation_code in sorted(zip(employment_ints, aag_occupations), reverse=True)[:5]:
     bls_states_values_db[state_name]['top 5'] += [occupation_code]
-    top_val = bls_states_values_db[state_name]['top 5']
-  if state_name and top_val not in top_values:
-    top_values.append((state_name,top_val))
-for state, top_occupations in top_values:
-  #top_state = [top_5 for top_5 in top_occupations]
-  top_five_occupations_textfile.write('\n'+ state + '\t')
-  for top_5 in top_occupations:
-    top_five_occupations_textfile.write(top_5 + '\t')
-    #   for occupations in top_occupations:
-    #     top_five_occupations_textfile.write('\t'+ occupations)
-    #   top_five_occupations_textfile.write( + '\n')
-    # top_five_occupations_textfile.write('\n' + employment)
 
-# Print out the top 5 in each state
-for state_name in bls_states_values_db:
-  #print('\n\n')
-  #print(state_name)
+  # Print out the top 5 in each state
   for occupation_code in bls_states_values_db[state_name]['top 5']:
     occupation_name = aag_occupations_db[occupation_code]['Main occupation name']
     employment = bls_states_values_db[state_name][occupation_code]['employment text']
-    #print(occupation_name, ' : ', employment)
-top_five_occupations_textfile.close()
+    print(occupation_name, ' : ', employment)
   
 del requests
 del json
