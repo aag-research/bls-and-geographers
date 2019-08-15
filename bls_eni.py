@@ -18,8 +18,8 @@ import requests
 import json
 
 # Coline's and Eni's Directories
-folder = r'C:\Users\cdony\Google Drive\GitHub\bls-and-geographers'
-#folder = r'C:\Users\oawowale\Documents\GitHub\bls-and-geographers'
+#folder = r'C:\Users\cdony\Google Drive\GitHub\bls-and-geographers'
+folder = r'C:\Users\oawowale\Documents\GitHub\bls-and-geographers'
 os.chdir(folder)
 
 """
@@ -196,42 +196,10 @@ for line in bls_responses_textfile[1:]:
     employment_ints += [employment_int]
     bls_states_values_db[state_name][occupation_code] = {'employment text': employment_text,
                                                          'employment int': employment_int}
-
   # Calculate top 5 occupations per state
   bls_states_values_db[state_name]['top 5'] = []
   for employment_int, occupation_code in sorted(zip(employment_ints, aag_occupations), reverse=True)[:5]:
     bls_states_values_db[state_name]['top 5'] += [occupation_code]
-<<<<<<< HEAD:extracting_bls_API_data.py
-    top_val = bls_states_values_db[state_name]['top 5']
-  if state_name and top_val not in top_values:
-    top_values.append((state_name,top_val))
-count = 0
-for state, top_occupations in top_values:
-  #top_state = [top_5 for top_5 in top_occupations]
-  top_five_occupations_textfile.write('\n'+ state + '\t')
-  #count = 0
-  for top_5 in top_occupations:
-    top_five_occupations_textfile.write(top_5 + '\t')
-    for i in range(len(top_occupations)):
-      if top_5 == top_occupations[i]:
-        count = count+1
-print(count)
-
-
-
-    #   for occupations in top_occupations:
-    #     top_five_occupations_textfile.write('\t'+ occupations)
-    #   top_five_occupations_textfile.write( + '\n')
-    # top_five_occupations_textfile.write('\n' + employment)
-
-# Print out the top 5 in each state
-for state_name in bls_states_values_db:
-  #print('\n\n')
-  #print(state_name)
-=======
-
-  # Print out the top 5 in each state
->>>>>>> 4186c230b9826da56bfc2ba1a39fdde9b6fddb7f:bls_eni.py
   for occupation_code in bls_states_values_db[state_name]['top 5']:
     occupation_name = aag_occupations_db[occupation_code]['Main occupation name']
     employment = bls_states_values_db[state_name][occupation_code]['employment text']
