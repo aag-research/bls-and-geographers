@@ -209,11 +209,20 @@ for line in bls_responses_textfile[1:]:
     top_val = bls_states_values_db[state_name]['top 5']
   if state_name and top_val not in top_values:
     top_values.append((state_name,top_val))
+count = 0
 for state, top_occupations in top_values:
   #top_state = [top_5 for top_5 in top_occupations]
   top_five_occupations_textfile.write('\n'+ state + '\t')
+  #count = 0
   for top_5 in top_occupations:
     top_five_occupations_textfile.write(top_5 + '\t')
+    for i in range(len(top_occupations)):
+      if top_5 == top_occupations[i]:
+        count = count+1
+print(count)
+
+
+
     #   for occupations in top_occupations:
     #     top_five_occupations_textfile.write('\t'+ occupations)
     #   top_five_occupations_textfile.write( + '\n')
