@@ -1,6 +1,6 @@
 # Author:                       Eni Awowale & Coline Dony
 # Date first written:           December 18, 2018
-# Date last updated:            July 268, 2019
+# Date last updated:            August 15, 2019
 # Purpose:                      Extract BLS data
 
 # Problem Statement:
@@ -18,7 +18,7 @@ import requests
 import json
 
 # Coline's and Eni's Directories
-#folder = r'C:\Users\cdony\Google Drive\GitHub\bls-and-geographers'
+# folder = r'C:\Users\cdony\Google Drive\GitHub\bls-and-geographers'
 folder = r'C:\Users\oawowale\Documents\GitHub\bls-and-geographers'
 os.chdir(folder)
 
@@ -42,17 +42,17 @@ os.chdir(folder)
 # Data Viewer app: https://beta.bls.gov/dataQuery/find?removeAll=1
 
 # What a single series_id should be made of
-prefix = 'OE'               # Occupational Employment
-seasonal_code = 'U'         # Seasonal
-area_type_code = 'S'        # Statewide
-state_code = '01'           # 01 stands for Alabama for example
-area_code = '00000'         # Statewide
-industry_code = '000000'    # Cross-industry, Private, Federal, State, and Local Government
+prefix = 'OE'  # Occupational Employment
+seasonal_code = 'U'  # Seasonal
+area_type_code = 'S'  # Statewide
+state_code = '01'  # 01 stands for Alabama for example
+area_code = '00000'  # Statewide
+industry_code = '000000'  # Cross-industry, Private, Federal, State, and Local Government
 occupation_code = '193092'  # 19-3092 stands for geogrpaher for example
-data_type = '01'            # Employment
+data_type = '01'  # Employment
 
 # A1. State codes: read the states code dictionary from BLS website
-# The BLS State codes represent each state and its name as used in their databases 
+# The BLS State codes represent each state and its name as used in their databases
 # see https://download.bls.gov/pub/time.series/sa/sa.state
 
 # Url request so we can get the states and state codes
@@ -62,22 +62,25 @@ bls_states_db = {}
 
 # Creating state dictionary
 for line in BLS_dictionary_textfile.split('\n')[1:]:
-  try: state_code, state_name = line.strip().split('\t')
-  except: continue
-  bls_states_db[state_code] = state_name
-
+    try:
+        state_code, state_name = line.strip().split('\t')
+    except:
+        continue
+    bls_states_db[state_code] = state_name
 
 # A2. Occupation codes: read the occupation code dictionary from BLS website
-# The BLS Occupation codes represent the 6-digit code and its name as used in their databases 
+# The BLS Occupation codes represent the 6-digit code and its name as used in their databases
 # see https://download.bls.gov/pub/time.series/oe/oe.occupation
 BLS_dictionary_url = r'https://download.bls.gov/pub/time.series/oe/oe.occupation'
 BLS_dictionary_textfile = requests.get(BLS_dictionary_url).text
 bls_occupations_db = {}
 
 for line in BLS_dictionary_textfile.split('\n')[1:]:
-  try: occupation_code_6digit, occupation_name = line.strip().split('\t')[:2]
-  except: continue
-  bls_occupations_db[occupation_code_6digit] = occupation_name
+    try:
+        occupation_code_6digit, occupation_name = line.strip().split('\t')[:2]
+    except:
+        continue
+    bls_occupations_db[occupation_code_6digit] = occupation_name
 
 # A3. AAG salary data: read the occupation codes associated with geography jobs
 # from the AAG salary spreadsheet (provided by Mark Revell in June 2019)
@@ -87,23 +90,25 @@ headers = AAG_salary_data_textfile[0].split('\t')
 aag_occupations_db = {}
 
 for line in AAG_salary_data_textfile[1:]:
-  # The occupations in the salary data file are based on the BLS 8-digit codes
-  occ_name_8digit, occ_code_8digit = line.split('\t')[:2]
-  #splits by tab
-  if occ_code_8digit != '':
-    # To make queries to the BLS API, we need the 6-digit code instead
-    occ_code_6digit = occ_code_8digit.replace('-', '').replace('.', '')[:6]
-    try: occ_name_6digit = bls_occupations_db[occ_code_6digit]
-    #adding a zero to the end of the 6 digit codes so it is the correct length
-    except:
-      occ_code_6digit = occ_code_6digit[:5] + '0'
-      occ_name_6digit = bls_occupations_db[occ_code_6digit]
+    # The occupations in the salary data file are based on the BLS 8-digit codes
+    occ_name_8digit, occ_code_8digit = line.split('\t')[:2]
+    # splits by tab
+    if occ_code_8digit != '':
+        # To make queries to the BLS API, we need the 6-digit code instead
+        occ_code_6digit = occ_code_8digit.replace('-', '').replace('.', '')[:6]
+        try:
+            occ_name_6digit = bls_occupations_db[occ_code_6digit]
+        # adding a zero to the end of the 6 digit codes so it is the correct length
+        except:
+            occ_code_6digit = occ_code_6digit[:5] + '0'
+            occ_name_6digit = bls_occupations_db[occ_code_6digit]
 
-    #adding the occupational codes the agg_occupations_db
-    if occ_code_6digit not in aag_occupations_db:
-      aag_occupations_db[occ_code_6digit] = { 'Main occupation name': occ_name_6digit,
-                                              'Geography occupations': {occ_code_8digit : occ_name_8digit}}
-    else: aag_occupations_db[occ_code_6digit]['Geography occupations'][occ_code_8digit] = occ_name_8digit
+        # adding the occupational codes the agg_occupations_db
+        if occ_code_6digit not in aag_occupations_db:
+            aag_occupations_db[occ_code_6digit] = {'Main occupation name': occ_name_6digit,
+                                                   'Geography occupations': {occ_code_8digit: occ_name_8digit}}
+        else:
+            aag_occupations_db[occ_code_6digit]['Geography occupations'][occ_code_8digit] = occ_name_8digit
 
 # List of 6-digit occupation codes that relate to geography jobs
 aag_occupations = list(aag_occupations_db.keys())
@@ -114,16 +119,16 @@ aag_occupations = list(aag_occupations_db.keys())
 series_ids = []
 series_ids_file = open('list_series_id.txt', 'w')
 
-#Initializing variable series_id that follows the BLS series_id format
+# Initializing variable series_id that follows the BLS series_id format
 for state_code in bls_states_db:
-  for occupation_code in aag_occupations:
-    series_id = prefix + seasonal_code + area_type_code + state_code + area_code + industry_code + occupation_code + data_type
-    series_ids += [series_id]
-    series_ids_file.write(series_id + '\n')
+    for occupation_code in aag_occupations:
+        series_id = prefix + seasonal_code + area_type_code + state_code + area_code + industry_code + occupation_code + data_type
+        series_ids += [series_id]
+        series_ids_file.write(series_id + '\n')
 series_ids_file.close()
 
 # Split the list into chucks of 50 series ids
-series_ids_chunks = [series_ids[i:i+50] for i in range(0, len(series_ids), 50)]
+series_ids_chunks = [series_ids[i:i + 50] for i in range(0, len(series_ids), 50)]
 
 # B. The years we want to extract from
 startyear = 2018
@@ -184,27 +189,29 @@ bls_responses_textfile.close()
 bls_responses_textfile = open(bls_responses_textfilename).readlines()
 bls_states_values_db = {}
 for line in bls_responses_textfile[1:]:
-  state_data = line.split('\t')
-  state_name = state_data[0]
-  bls_states_values_db[state_name] = {}
+    state_data = line.split('\t')
+    state_name = state_data[0]
+    bls_states_values_db[state_name] = {}
 
-  # Convert text values into integers
-  employment_ints = []
-  for occupation_code, employment_text in zip(aag_occupations, state_data[1:]):
-    try: employment_int = int(employment_text)
-    except: employment_int = 0
-    employment_ints += [employment_int]
-    bls_states_values_db[state_name][occupation_code] = {'employment text': employment_text,
-                                                         'employment int': employment_int}
-  # Calculate top 5 occupations per state
-  bls_states_values_db[state_name]['top 5'] = []
-  for employment_int, occupation_code in sorted(zip(employment_ints, aag_occupations), reverse=True)[:5]:
-    bls_states_values_db[state_name]['top 5'] += [occupation_code]
-  for occupation_code in bls_states_values_db[state_name]['top 5']:
-    occupation_name = aag_occupations_db[occupation_code]['Main occupation name']
-    employment = bls_states_values_db[state_name][occupation_code]['employment text']
-    print(occupation_name, ' : ', employment)
-  
+    # Convert text values into integers
+    employment_ints = []
+    for occupation_code, employment_text in zip(aag_occupations, state_data[1:]):
+        try:
+            employment_int = int(employment_text)
+        except:
+            employment_int = 0
+        employment_ints += [employment_int]
+        bls_states_values_db[state_name][occupation_code] = {'employment text': employment_text,
+                                                             'employment int': employment_int}
+
+    # Calculate top 5 occupations per state
+    bls_states_values_db[state_name]['top 5'] = []
+    for employment_int, occupation_code in sorted(zip(employment_ints, aag_occupations), reverse=True)[:5]:
+        bls_states_values_db[state_name]['top 5'] += [occupation_code]
+    for occupation_code in bls_states_values_db[state_name]['top 5']:
+        occupation_name = aag_occupations_db[occupation_code]['Main occupation name']
+        employment = bls_states_values_db[state_name][occupation_code]['employment text']
+        print(occupation_name, ' : ', employment)
+
 del requests
 del json
-
